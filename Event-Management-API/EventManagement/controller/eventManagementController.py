@@ -91,7 +91,7 @@ def get_all_events(status:str=None,location:str=None, date: date = None, db: Ses
 def update_event(event_id: int, event: EventDTO, db: Session = Depends(get_db)):
     db_event = db.query(Event).filter(Event.event_id == event_id).first()
     if not db_event:
-        raise HTTPException(status_code=404, detail="Event not found.")
+        raise HTTPException(status_code=404, detail="Event not found")
 
     # Update event details
     db_event.name = event.name
@@ -112,7 +112,7 @@ def update_event(event_id: int, event: EventDTO, db: Session = Depends(get_db)):
 def delete_event(event_id: int, db: Session = Depends(get_db)):
     db_event = db.query(Event).filter(Event.event_id == event_id).first()
     if not db_event:
-        raise HTTPException(status_code=404, detail="Event not found.")
+        raise HTTPException(status_code=404, detail="Event not found")
 
     db.delete(db_event)
     db.commit()
