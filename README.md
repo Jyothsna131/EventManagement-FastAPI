@@ -6,7 +6,7 @@ The system is designed to handle event scheduling, attendee registration, event 
 
 ### Features
 #### 1. Event Management
-- Crete, read, update, and delete events
+- Create, read, update, and delete events
 - Automatically update event status based on the event's end time
 - Search events by status, location, and date
 #### 2. Attendee Management
@@ -97,6 +97,42 @@ FastAPI provides automatic Swagger UI documentation for our API:
 - **PUT** /attendees/check_in/{attendee_id}: Check in an attendee
 - **POST** /attendees/bulk-check-in: Bulk check-in attendees via CSV
 
+### Database Schema
+#### Event Table
+```
+mysql
+
+CREATE TABLE events(
+event_id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+description TEXT,
+start_time DATETIME NOT NULL,
+end_time DATETIME NOT NULL,
+location VARCHAR(255) NOT NULL,
+max_attendees INT NOT NULL,
+status ENUM('scheduled','ongoing','completed','canceled') NOT NULL DEFAULT 'scheduled'
+);
+```
+#### Attendee Table
+```
+mysql
+
+CREATE TABLE attendees(
+attendee_id INT AUTO_INCREMENT PRIMARY KEY,
+first_name VARCHAR(255) NOT NULL,
+last_name VARCHAR(255) NOT NULL,
+email VARCHAR(255) UNIQUE NOT NULL,
+phone_number VARCHAR(20),
+event_id INT,
+check_in_status boolean DEFAULT FALSE,
+FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE
+);
+```
+#### Schema Explanation: 
+- **Event Table:** Stores event details including name, description, start and endtimes, location, maximum attendees, and status
+- **Attendee Table:** Stores attendee information, including first name, last name, email, phone number, event association, and check in status
+- **Relationship:** The attendees table references the events table via a foreign key on the attendees (one event can have multiple attendees)
+  
 ### Testing
 Run unit tests to ensure everygthing works as expected:
 ```
