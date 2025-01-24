@@ -71,7 +71,7 @@ def get_all_events(status:str=None,location:str=None, date: date = None, db: Ses
     if status:
         query= query.filter(Event.status == status)
     if location:
-        query.filter(Event.location == location)
+        query=query.filter(Event.location == location)
     if date:
         start_of_day = datetime.combine(date, datetime.min.time())
         end_of_day = datetime.combine(date, datetime.max.time())
