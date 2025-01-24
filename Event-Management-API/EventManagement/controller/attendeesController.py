@@ -49,8 +49,22 @@ def add_attendee(attendee: AttendeesDTO, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=400, detail="Integrity error: " + str(e))
 
-@attendee_router.get("/", response_model=list[AttendeesDTO])
-def get_all_attendees(event_id:int,check_in_status:bool=None,db: Session = Depends(get_db)):
+@attendee_router.get("/all", response_model=list[AttendeesDTO])
+def get_all_attendees(db:Session=Depends(get_db)):
+    attendees=db.query(Attendee).all()
+    if not attendees:
+        raise HTTPException(status_code=404,detail="No attendees found")
+    return attendees
+
+@attendee_router.get("/{attendee_id}",response_model=AttendeesDTO)
+def get_attendee(attendee_id:int,db:Session=Depends(get_db)):
+    db_attendee=db.query(Attendee).filter(Attendee.attendee_id==attendee_id).first()
+    if not db_attendee:
+        raise HTTPException(status_code=404, detail="Attendee not found.")
+    return db_attendee
+
+@attendee_router.get("/ofevent/{event_id}", response_model=list[AttendeesDTO])
+def get_event_attendees(event_id:int,check_in_status:bool=None,db: Session = Depends(get_db)):
     event=db.query(Event).filter(Event.event_id==event_id).first()
 
     if not event:
@@ -63,7 +77,7 @@ def get_all_attendees(event_id:int,check_in_status:bool=None,db: Session = Depen
 
     attendees=query.all()
     if not attendees:
-        raise HTTPException(status_code=404,detail="No attendees found for search criterea")
+        raise HTTPException(status_code=404,detail="No attendees found for search criterea new")
     return attendees
 
 @attendee_router.put("/{attendee_id}", response_model=AttendeesDTO)
